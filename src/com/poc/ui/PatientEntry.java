@@ -15,13 +15,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.poc.RestClient;
-import com.poc.constant.PatientConstant;
+import com.poc.api.client.RestClient;
+import com.poc.constant.PatientConstants;
 import com.poc.model.Address;
 import com.poc.model.Patient;
 import com.poc.model.Telephone;
-import com.poc.util.PopupWindow;
-
+import com.poc.util.PatientValidation;
+/**
+ * This class is to initiate the application
+ * UI to Save or Update or View of the patient details
+ * @author HS106406
+ * @version 1.0
+ */
 public class PatientEntry {
 
 	Shell shell;
@@ -76,6 +81,10 @@ public class PatientEntry {
 
 	Button updateButton;
 
+	/**
+	 * Entry point to the application
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		patientEntry = new PatientEntry();
 		patientEntry.init();
@@ -89,7 +98,9 @@ public class PatientEntry {
 	public void setExistPatient(Patient existPatient) {
 		this.existPatient = existPatient;
 	}
-
+    /**
+     * create shell and display
+     */
 	private void init() {
 		Display display = new Display();
 		shell = new Shell();
@@ -98,10 +109,14 @@ public class PatientEntry {
 		createNewPatient(display, shell);
 	}
 
-	// Create new patient form
+	/**
+	 * Create new patient form
+	 * @param display
+	 * @param shell2
+	 */
 	private void createNewPatient(Display display, Shell shell2) {
 		shell.setText("Welcome to Cerner Health Care");
-		shell.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.BOLD));
+		shell.setFont(SWTResourceManager.getFont("Patient UI", 16, SWT.BOLD));
 
 		Label label = new Label(shell, SWT.CENTER);
 		label.setBounds(500, 5, 700, 30);
@@ -120,12 +135,17 @@ public class PatientEntry {
 
 	}
 
+	/**
+	 * Create patient form with save update and locator button listener
+	 * @param display
+	 * @param shell2
+	 */
 	private void createPatientDetailsSection(Display display, Shell shell2) {
 		// Patient Name
 		int labelStartingPosition = 50;
 		int textStartingPosition = 160;
 		int labelWidth = 100;
-		
+
 		patientCreatePage(labelStartingPosition, textStartingPosition, labelWidth);
 
 		Button locateButton = new Button(shell, SWT.PUSH);
@@ -171,6 +191,12 @@ public class PatientEntry {
 
 	}
 
+	/**
+	 * create patient form
+	 * @param labelStartingPosition
+	 * @param textStartingPosition
+	 * @param labelWidth
+	 */
 	private void patientCreatePage(int labelStartingPosition, int textStartingPosition, int labelWidth) {
 		Label patientName = new Label(shell, SWT.NONE);
 		patientName.setText("Patient Name*");
@@ -209,7 +235,7 @@ public class PatientEntry {
 		// Address
 		Label address = new Label(shell, SWT.NONE);
 		address.setText("Please fill the Address of the Patient*");
-		address.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		address.setFont(SWTResourceManager.getFont("Patient UI", 9, SWT.BOLD));
 		address.setBounds(labelStartingPosition, 170, 900, 30);
 
 		Label addressType = new Label(shell, SWT.NONE);
@@ -218,12 +244,12 @@ public class PatientEntry {
 
 		patientAddressTypeText = new Text(shell, SWT.BORDER);
 		patientAddressTypeText.setBounds(textStartingPosition, 200, 300, 20);
-		patientAddressTypeText.setText(PatientConstant.PRESTNT_ADDRESS_TYPE);
+		patientAddressTypeText.setText(PatientConstants.PRESTNT_ADDRESS_TYPE);
 		patientAddressTypeText.setEnabled(false);
 
 		patientPermanentAddressTypeText = new Text(shell, SWT.BORDER);
 		patientPermanentAddressTypeText.setBounds(480, 200, 300, 20);
-		patientPermanentAddressTypeText.setText(PatientConstant.PERMANENT_ADDRESS_TYPE);
+		patientPermanentAddressTypeText.setText(PatientConstants.PERMANENT_ADDRESS_TYPE);
 		patientPermanentAddressTypeText.setEnabled(false);
 
 		Label street = new Label(shell, SWT.NONE);
@@ -278,7 +304,7 @@ public class PatientEntry {
 
 		Label telephone = new Label(shell, SWT.NONE);
 		telephone.setText("Patient contact details");
-		telephone.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		telephone.setFont(SWTResourceManager.getFont("Patient UI", 9, SWT.BOLD));
 		telephone.setBounds(labelStartingPosition, 400, 900, 20);
 
 		Label phoneType = new Label(shell, SWT.NONE);
@@ -336,6 +362,12 @@ public class PatientEntry {
 		countryCode.pack();
 	}
 
+	/**
+	 * This method is to validate patient form and do save or update
+	 * @param display
+	 * @param shell2
+	 * @param isUpdate
+	 */
 	protected void createOrUpdatePatient(Display display, Shell shell2, boolean isUpdate) {
 
 		String patientName = patientNameText.getText();
@@ -376,14 +408,14 @@ public class PatientEntry {
 		String altPhoneType = altphoneTypeText.getText();
 		String priPhoneNumber = phoneNumberText.getText();
 		String altPhoneNumber = altPhoneNumberText.getText();
-		String pricountryCode = countryCodeText.getText();
+		String priCountryCode = countryCodeText.getText();
 		String altCountryCode = altCountryCodeText.getText();
 
 		System.out.println("priPhoneType: " + priPhoneType);
 		System.out.println("altPhoneType: " + altPhoneType);
 		System.out.println("priPhoneNumber: " + priPhoneNumber);
 		System.out.println("altPhoneNumber: " + altPhoneNumber);
-		System.out.println("pricountryCode: " + pricountryCode);
+		System.out.println("priCountryCode: " + priCountryCode);
 		System.out.println("altCountryCode: " + altCountryCode);
 
 		Character gender = 'O';
@@ -393,51 +425,109 @@ public class PatientEntry {
 			gender = 'F';
 		}
 		Patient patient = null;
-		if (isUpdate) {
-			System.out.println("Update Patient!");
-			patient = preparePatientObject(patientName, patientDOB, gender, patientPresentAddressType,
-					patientPresentStreet, patientPresentCity, patientPresentState, patientPresentPostalCode,
-					patientPermanentAddressType, patientPermanentStreet, patientPermanentCity, patientPermanentState,
-					patientPermanentPostalCode, priPhoneType, priPhoneNumber, pricountryCode, altPhoneType,
-					altPhoneNumber, altCountryCode, existPatient, true);
+		boolean isAllPatientDataValid = false;
 
-		} else {
-			System.out.println("Create Patient!");
-			patient = preparePatientObject(patientName, patientDOB, gender, patientPresentAddressType,
-					patientPresentStreet, patientPresentCity, patientPresentState, patientPresentPostalCode,
-					patientPermanentAddressType, patientPermanentStreet, patientPermanentCity, patientPermanentState,
-					patientPermanentPostalCode, priPhoneType, priPhoneNumber, pricountryCode, altPhoneType,
-					altPhoneNumber, altCountryCode, existPatient, false);
+		PatientValidation patientValidation = new PatientValidation();
 
+		Boolean isPatientBasicInfoValid = patientValidation.validatePatientData(patientName, patientDOB, shell);
+
+		Boolean isPresentAddressValid = isPatientBasicInfoValid
+				? patientValidation.validatePatientAddressData(patientPresentAddressType, patientPresentStreet,
+						patientPresentCity, patientPresentState, patientPresentPostalCode, shell, "Present")
+				: false;
+
+		Boolean isPermanentAddressValid = isPresentAddressValid
+				? patientValidation.validatePatientAddressData(patientPermanentAddressType, patientPermanentStreet,
+						patientPermanentCity, patientPermanentState, patientPermanentPostalCode, shell, "Permanent")
+				: false;
+
+		Boolean isPrimaryContactValid = isPermanentAddressValid
+				? patientValidation.validatePatientContactData(priPhoneType, priPhoneNumber, priCountryCode, shell,
+						"Primary")
+				: false;
+
+		Boolean isAlternateContactValid = isPrimaryContactValid
+				? patientValidation.validatePatientContactData(altPhoneType, altPhoneNumber, altCountryCode, shell,
+						"Alternate")
+				: false;
+
+		if (isPatientBasicInfoValid && isPresentAddressValid && isPermanentAddressValid && isPrimaryContactValid
+				&& isAlternateContactValid) {
+			isAllPatientDataValid = true;
 		}
 
-		try {
-			PatientView patientView = new PatientView(display);
-			HttpResponse<String> response;
-			if (!isUpdate) {
-				response = RestClient.createPatient(patient);
+		if (isAllPatientDataValid) {
+			if (isUpdate) {
+				System.out.println("Update Patient!");
+				patient = preparePatientObject(patientName, patientDOB, gender, patientPresentAddressType,
+						patientPresentStreet, patientPresentCity, patientPresentState, patientPresentPostalCode,
+						patientPermanentAddressType, patientPermanentStreet, patientPermanentCity,
+						patientPermanentState, patientPermanentPostalCode, priPhoneType, priPhoneNumber, priCountryCode,
+						altPhoneType, altPhoneNumber, altCountryCode, existPatient, true);
+
 			} else {
-				response = RestClient.updatePatient(patient);
+				System.out.println("Create Patient!");
+				patient = preparePatientObject(patientName, patientDOB, gender, patientPresentAddressType,
+						patientPresentStreet, patientPresentCity, patientPresentState, patientPresentPostalCode,
+						patientPermanentAddressType, patientPermanentStreet, patientPermanentCity,
+						patientPermanentState, patientPermanentPostalCode, priPhoneType, priPhoneNumber, priCountryCode,
+						altPhoneType, altPhoneNumber, altCountryCode, existPatient, false);
+
 			}
 
-			System.out.println("response code is : " + response.statusCode());
+			try {
+				PatientView patientView = new PatientView(display);
+				HttpResponse<String> response;
+				if (!isUpdate) {
+					response = RestClient.createPatient(patient);
+				} else {
+					response = RestClient.updatePatient(patient);
+				}
 
-			// if(response.statusCode() == 201) {
-			patientView.setPatientEntry(patientEntry);
-			patientView.showPatientDetails(true);
-			// }
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			System.out.println("InterruptedException issue");
-			e.printStackTrace();
+				System.out.println("response code is : " + response.statusCode());
+
+				// if(response.statusCode() == 201) {
+				patientView.setPatientEntry(patientEntry);
+				patientView.showPatientDetails(true);
+				// }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.out.println("InterruptedException issue");
+				e.printStackTrace();
+			}
 		}
 
 		System.out.println("End of create");
 
 	}
 
+	/**
+	 * prepare the patient details to create or update
+	 * @param patientName
+	 * @param patientDOB
+	 * @param gender
+	 * @param patientPresentAddressType
+	 * @param patientPresentStreet
+	 * @param patientPresentCity
+	 * @param patientPresentState
+	 * @param patientPresentPostalCode
+	 * @param patientPermanentAddressType
+	 * @param patientPermanentStreet
+	 * @param patientPermanentCity
+	 * @param patientPermanentState
+	 * @param patientPermanentPostalCode
+	 * @param priPhoneType
+	 * @param priPhoneNumber
+	 * @param pricountryCode
+	 * @param altPhoneType
+	 * @param altPhoneNumber
+	 * @param altcountryCode
+	 * @param existingPatient
+	 * @param isUpdate
+	 * @return
+	 */
 	private Patient preparePatientObject(String patientName, String patientDOB, Character gender,
 			String patientPresentAddressType, String patientPresentStreet, String patientPresentCity,
 			String patientPresentState, String patientPresentPostalCode, String patientPermanentAddressType,
@@ -515,6 +605,9 @@ public class PatientEntry {
 
 	}
 
+	/**
+	 * Set default data in the patient form
+	 */
 	public void setDataForDefaultPage() {
 
 		patientNameText.setText("");
@@ -555,6 +648,12 @@ public class PatientEntry {
 
 	}
 
+	/**
+	 * set data for view and update
+	 * @param patient
+	 * @param displayParent
+	 * @param isDisable
+	 */
 	public void setDataForViewAndModify(Patient patient, Display displayParent, boolean isDisable) {
 		System.out.println("Inside setData for view & modify ");
 		patientNameText.setText(patient.getPatientName());

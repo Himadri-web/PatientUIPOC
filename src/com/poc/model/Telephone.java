@@ -3,7 +3,7 @@ package com.poc.model;
 
 /**
  * @author HS106406
- * This Telephone class represents as Entity and Model class for holding contact details of a patient
+ * This Telephone class represents as Model class for holding contact details of a patient
  */
 public class Telephone {
 

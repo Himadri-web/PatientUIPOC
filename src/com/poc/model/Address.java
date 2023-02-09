@@ -2,8 +2,9 @@ package com.poc.model;
 
 
 /**
+ * Address class represents as Model class for holding Address details of a patient
  * @author HS106406
- * This Address class represents as Entity and Model class for holding Address details of a patient
+ * @version 1.0
  */
 public class Address {
 

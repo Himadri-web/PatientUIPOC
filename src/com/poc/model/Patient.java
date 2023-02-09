@@ -2,7 +2,11 @@ package com.poc.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * This class is a Model class for holding Patient details
+ * @author HS106406
+ * @version 1.0
+ */
 public class Patient {
 	private Integer patientId;
 

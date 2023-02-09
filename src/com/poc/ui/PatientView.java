@@ -24,12 +24,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.poc.RestClient;
+import com.poc.api.client.RestClient;
 import com.poc.model.Address;
 import com.poc.model.Patient;
 import com.poc.model.Telephone;
 import com.poc.util.PopupWindow;
-
+/**
+ * This class for View Update and delete functionality
+ * @author HS106406
+ * @version 1.0
+ *
+ */
 public class PatientView {
 	public Shell shell;
 	public Table table;
@@ -64,6 +69,10 @@ public class PatientView {
 		System.out.println("displayParent : " + displayParent);
 	}
 
+	/**
+	 * To show all patient details after creation
+	 * @param isAllPatientList
+	 */
 	public void showPatientDetails(boolean isAllPatientList) {
 		shell = new Shell(displayParent);
 		showPatientAfterCreation(isAllPatientList);
@@ -79,6 +88,10 @@ public class PatientView {
 
 	}
 
+	/**
+	 * After created fetch all the patient details and setting in form
+	 * @param isAllPatientList
+	 */
 	private void showPatientAfterCreation(boolean isAllPatientList) {
 
 		try {
@@ -95,6 +108,11 @@ public class PatientView {
 
 	}
 
+	/**
+	 * This method is to create form with search view edit and delete button with action listener
+	 * @param displayParent
+	 * @param isAllPatientList
+	 */
 	private void createPageView(Display displayParent, boolean isAllPatientList) {
 		Label label = new Label(shell, SWT.CENTER);
 		Label searchlabel = new Label(shell, SWT.CENTER);
@@ -147,13 +165,7 @@ public class PatientView {
 				System.out.println("Selected record'spatient id : " + patientId);
 				try {
 					HttpResponse<String> response = RestClient.removePatient(patientId);
-					MessageBox messageBox = null;
 					if (response.statusCode() == 200) {
-						// messageBox = new MessageBox(shell, SWT.ICON_WORKING);
-						// messageBox.setText("Success");
-						// messageBox.setMessage("Patient ID " + patientId +" deleted successfully");
-						// messageBox.setButtonLabels();
-
 						Integer option = PopupWindow.showDialogeBox(shell, SWT.ICON_WORKING, "Success",
 								"Patient ID " + patientId + " deleted successfully");
 
@@ -182,13 +194,18 @@ public class PatientView {
 				System.out.println("Inside Search button listener");
 				System.out.println("Selected search field : " + comboSearchCriteria.getText());
 				Boolean isRemoveAllDataFromTable = table != null && table.getItemCount() > 0 ? true : false;
-
-				if (comboSearchCriteria.getText().trim().isBlank()) {
+                Boolean isDataValidToSearch = true;
+				if (comboSearchCriteria.getText().isBlank()) {
 					PopupWindow.showDialogeBox(shell, SWT.ICON_WARNING, "Warning",
 							"Please select the search criteria!");
+				}else if(searchText.getText().trim().isBlank()) {
+					isDataValidToSearch = false;
+					PopupWindow.showDialogeBox(shell, SWT.ICON_WARNING, "Warning",
+							"It is blank! Please pass value to search...");
 				}
+				
 
-				if (comboSearchCriteria.getText().equals("Patient ID")) {
+				if (comboSearchCriteria.getText().equals("Patient ID") && isDataValidToSearch) {
 					System.out.println("Search by patient ID");
 					String patientId = searchText.getText();
 					try {
@@ -200,20 +217,19 @@ public class PatientView {
 						System.out.println("Search by patient ID completed");
 
 					} catch (NumberFormatException | IOException | InterruptedException e) {
-						Integer option = showDialogeBox(SWT.ICON_ERROR, "Fail",
+						Integer option =PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
 								"Patient does not exist with Patient ID :  " + patientId);
 						
 						e.printStackTrace();
 					}
 
-				} else if (comboSearchCriteria.getText().equals("Patient Name")) {
+				} else if (comboSearchCriteria.getText().equals("Patient Name") && isDataValidToSearch) {
 					System.out.println("Search by patient Name");
 					String patientName = searchText.getText();
 					try {
 						// Patient patient = RestClient.fetchPatientById(Integer.valueOf(patientName));
-						Patient patient = RestClient.fetchPatientById(Integer.valueOf(10));
-						List<Patient> patientList = new ArrayList<>();
-						patientList.add(patient);
+						patientList = RestClient.fetchPatientByName(patientName);
+						
 						createPatientsTable(displayParent, searchlabel, viewButton, editButton, deleteButton,
 								patientList, isRemoveAllDataFromTable);
 						System.out.println("Search by patient Name completed");
@@ -281,14 +297,16 @@ public class PatientView {
 
 	}
 
-	private Integer showDialogeBox(int iconWorking, String text, String message) {
-		MessageBox messageBox;
-		messageBox = new MessageBox(shell, iconWorking);
-		messageBox.setText(text);
-		messageBox.setMessage(message);
-		return messageBox.open();
-	}
-
+	/**
+	 * create patient list table
+	 * @param displayParent
+	 * @param label
+	 * @param viewButton
+	 * @param editButton
+	 * @param deleteButton
+	 * @param patientList
+	 * @param isDataRemoveFromTable
+	 */
 	private void createPatientsTable(Display displayParent, Label label, Button viewButton, Button editButton,
 			Button deleteButton, List<Patient> patientList, boolean isDataRemoveFromTable) {
 
@@ -395,12 +413,12 @@ public class PatientView {
 				TableItem[] selection = table.getSelection();
 
 				if (selection.length == 1) {
-					System.out.println("Inside else selecttion");
+					System.out.println("Inside enable button selecttion");
 					viewButton.setEnabled(true);
 					editButton.setEnabled(true);
 					deleteButton.setEnabled(true);
 				} else {
-					// System.out.println("You should not select more than one patient ata time");
+					// System.out.println("You should not select more than one patient at a time");
 					viewButton.setEnabled(false);
 					editButton.setEnabled(false);
 					deleteButton.setEnabled(false);
@@ -416,7 +434,7 @@ public class PatientView {
 						break;
 					case SWT.CANCEL:
 
-						System.out.println("Selected Option Value : " + selectedValue);
+					System.out.println("Selected Option Value : " + selectedValue);
 
 					}
 				}
