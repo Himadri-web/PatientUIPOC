@@ -35,12 +35,12 @@ public class PatientValidation {
 	}
 
 	public boolean validateAlphabetsInput(String input) {
-		String regex = "[A-Za-z ]+";
+		String regex = "[^ ][A-Za-z ]+";
 		return validate(input, regex);
 	}
 
 	public boolean validateAlphaNumericInput(String input) {
-		String regex = "[A-Za-z0-9#, ]+";// [0-9 ]*[# ]
+		String regex = "[^ ][A-Za-z0-9#, ]+";// [0-9 ]*[# ]
 		return validate(input, regex);
 
 	}
