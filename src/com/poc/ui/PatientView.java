@@ -228,7 +228,7 @@ public class PatientView {
 					String patientName = searchText.getText();
 					try {
 						// Patient patient = RestClient.fetchPatientById(Integer.valueOf(patientName));
-						patientList = RestClient.fetchPatientByName(patientName);
+						patientList = RestClient.fetchPatientByName(patientName.toUpperCase());
 						
 						createPatientsTable(displayParent, searchlabel, viewButton, editButton, deleteButton,
 								patientList, isRemoveAllDataFromTable);

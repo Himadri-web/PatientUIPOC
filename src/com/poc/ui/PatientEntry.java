@@ -539,7 +539,7 @@ public class PatientEntry {
 		if (isUpdate) {
 			patient.setPatientId(existingPatient.getPatientId());
 		}
-		patient.setPatientName(patientName);
+		patient.setPatientName(patientName.toUpperCase());
 		patient.setDateOfBirth(patientDOB);
 		patient.setGender(gender);
 

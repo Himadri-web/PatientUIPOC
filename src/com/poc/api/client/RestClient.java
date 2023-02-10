@@ -33,7 +33,7 @@ public class RestClient {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		fetchPatientByName("Himadri");
+		fetchPatientByName("Himadri%20Sekhar%20Sahani");
 		//removePatient(1);
 		// updatePatient(1);
 		// createPatient(null);
@@ -99,7 +99,8 @@ public class RestClient {
 	 * @throws InterruptedException
 	 */
 	public static List<Patient> fetchPatientByName(String patientName) throws IOException, InterruptedException {
-		String apiEndPoint = "http://localhost:8080/api/patient/name/" + patientName;
+		String name = patientName.replaceAll("\\s", "%20");
+		String apiEndPoint = "http://localhost:8080/api/patient/name/" + name;
 		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application-json")
 				.GET().build();
 		var client = HttpClient.newHttpClient();
