@@ -26,22 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 public class RestClient {
-
-	/**
-	 * @param args
-	 * @throws InterruptedException
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException, InterruptedException {
-		fetchPatientByName("Himadri%20Sekhar%20Sahani");
-		//removePatient(1);
-		// updatePatient(1);
-		// createPatient(null);
-		// fetchPatientList();
-		System.out.println("Fetch Patient by Id");
-		// fetchPatientById(100);
-	}
 	
+	private static final String REST_END_POINT = "http://localhost:8080/api/patient";
 	/**
 	 * This method is used to fetch all available patient details as a List
 	 * @return All patient list
@@ -49,9 +35,9 @@ public class RestClient {
 	 * @throws InterruptedException
 	 */
 
-	public static List<Patient> fetchPatientList() throws IOException, InterruptedException {
+	public static List<Patient> fetchPatients() throws IOException, InterruptedException {
 		String apiEndPoint = "http://localhost:8080/api/patient";
-		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application-json")
+		var request = HttpRequest.newBuilder().uri(URI.create(REST_END_POINT)).header("Content-Type", "application-json")
 				.GET().build();
 		var client = HttpClient.newHttpClient();
 		var response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -64,8 +50,6 @@ public class RestClient {
 		System.out.println("patients details: " + patients);
 
 		return patients;
-
-		// mapper.readValue(response.body(), new TypeReference<Patient>() {});
 	}
 
 	/**
@@ -75,7 +59,7 @@ public class RestClient {
 	 * @throws InterruptedException
 	 */
 	public static Patient fetchPatientById(Integer patientId) throws IOException, InterruptedException {
-		String apiEndPoint = "http://localhost:8080/api/patient/" + patientId;
+		String apiEndPoint = REST_END_POINT + "/" + patientId;
 		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application-json")
 				.GET().build();
 		var client = HttpClient.newHttpClient();
@@ -98,9 +82,9 @@ public class RestClient {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static List<Patient> fetchPatientByName(String patientName) throws IOException, InterruptedException {
+	public static List<Patient> fetchPatientsByName(String patientName) throws IOException, InterruptedException {
 		String name = patientName.replaceAll("\\s", "%20");
-		String apiEndPoint = "http://localhost:8080/api/patient/name/" + name;
+		String apiEndPoint = REST_END_POINT + "/name/" + name;
 		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application-json")
 				.GET().build();
 		var client = HttpClient.newHttpClient();
@@ -128,13 +112,9 @@ public class RestClient {
 	public static HttpResponse<String> createPatient(Patient patient) throws IOException, InterruptedException {
 
 		String apiEndPoint = "http://localhost:8080/api/patient";
-		var objectMapper = new ObjectMapper();
-
-		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application/json")
+		
+		var request = HttpRequest.newBuilder().uri(URI.create(REST_END_POINT)).header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(patient))).build();
-		// .POST(HttpRequest.BodyPublishers.ofString(new
-		// ObjectMapper().writeValueAsString(sampleDataForCreatePatient()))).build();
-
 		var client = HttpClient.newHttpClient();
 		var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		System.out.println("response.body()" + response.body());
@@ -152,14 +132,10 @@ public class RestClient {
 	 */
 	public static HttpResponse<String> updatePatient(Patient patient) throws IOException, InterruptedException {
 
-		String apiEndPoint = "http://localhost:8080/api/patient/" + patient.getPatientId();
-		var objectMapper = new ObjectMapper();
+		String apiEndPoint = REST_END_POINT + "/" + patient.getPatientId();
 
 		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application/json")
 				.PUT(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(patient))).build();
-		// .PUT(HttpRequest.BodyPublishers.ofString(new
-		// ObjectMapper().writeValueAsString(sampleDataForUpdatePatient()))).build();
-
 		var client = HttpClient.newHttpClient();
 		var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		System.out.println(response.body());
@@ -171,13 +147,13 @@ public class RestClient {
 	/**
 	 * This method is used to delete one patient based on Patient Id
 	 * @param patientId
-	 * @return returns response as a string with response body and qresponse code
+	 * @return returns response as a string with response body and response code
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
 	public static HttpResponse<String> removePatient(Integer patientId) throws IOException, InterruptedException {
 
-		String apiEndPoint = "http://localhost:8080/api/patient/" + patientId;
+		String apiEndPoint = REST_END_POINT + "/" + patientId;
 		var request = HttpRequest.newBuilder().uri(URI.create(apiEndPoint)).header("Content-Type", "application/json")
 				.DELETE().build();
 
@@ -186,65 +162,5 @@ public class RestClient {
 		System.out.println(response.body());
 		System.out.println(response.statusCode());
 		return response;
-
 	}
-	
-    //Sample data to test
-	private static Patient sampleDataForCreatePatient() {
-		Address permanentAddress = new Address();
-		// permanentAddress.setAddressId(556);
-		permanentAddress.setAddressType("Permanent Address");
-		permanentAddress.setStreet("Jajpur");
-		permanentAddress.setCity("Bhubaneswar");
-		permanentAddress.setState("Odisha");
-		permanentAddress.setPostalCode("755014");
-
-		Telephone alternateContact = new Telephone();
-		// alternateContact.setPhoneId(334);
-		alternateContact.setPhoneNumber("Alternate Contact");
-		alternateContact.setCountryCode("+91");
-		alternateContact.setPhoneNumber("9884473XXX");
-
-		Patient patient = new Patient();
-		// patient.setPatientId(1);
-		patient.setPatientName("Himadri");
-		patient.setGender('M');
-		patient.setMobileNumber(Arrays.asList(alternateContact));
-		patient.setDateOfBirth("06/06/1985");
-		patient.setAddress(Arrays.asList(permanentAddress
-
-		));
-
-		return patient;
-	}
-
-	//Sample data to test
-	private static Patient sampleDataForUpdatePatient() {
-		Address permanentAddress = new Address();
-		permanentAddress.setAddressId(2);
-		permanentAddress.setAddressType("Permanent Address Update");
-		permanentAddress.setStreet("Jajpur");
-		permanentAddress.setCity("Bhubaneswar");
-		permanentAddress.setState("Odisha");
-		permanentAddress.setPostalCode("755014");
-
-		Telephone alternateContact = new Telephone();
-		alternateContact.setPhoneId(2223);
-		alternateContact.setPhoneType("Alternate Contact Update");
-		alternateContact.setCountryCode("+91");
-		alternateContact.setPhoneNumber("9884473XXX");
-
-		Patient patient = new Patient();
-		patient.setPatientId(1);
-		patient.setPatientName("Himadri Update");
-		patient.setGender('M');
-		patient.setMobileNumber(Arrays.asList(alternateContact));
-		patient.setDateOfBirth("06/06/1985");
-		patient.setAddress(Arrays.asList(permanentAddress
-
-		));
-
-		return patient;
-	}
-
 }

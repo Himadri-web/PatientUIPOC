@@ -11,23 +11,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
+ * This class used to validate the patient form fileds
  * @author HS106406
- *
+ * @version 1.0
  */
 public class PatientValidation {
-
-	public static void main(String[] args) {
-		PatientValidation validation = new PatientValidation();
-		String input = "";// ABCbcaABCaB cDEfgH ";
-		String input1 = "";// "1234001112";
-		String alpNum = ""; // HN#38 MCN Nagar Extension ";
-
-		System.out.println(validation.validateAlphabetsInput(input));
-		System.out.println(validation.validateNumbersInput(input1));
-		System.out.println(validation.validateAlphaNumericInput(alpNum));
-		System.out.println(validation.validateMobileNumber("0000000000"));
-
-	}
 
 	public Boolean validateNumbersInput(String input) {
 		String regex = "[0-9]+";
@@ -95,10 +83,7 @@ public class PatientValidation {
 			PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Error",
 					"Please provide valid " + type+ " Postal Code");
 		}
-		
-		/*return validateAlphabetsInput(patientAddressType) && validateAlphaNumericInput(patientStreet)
-				&& validateAlphabetsInput(patientCity) && validateAlphabetsInput(patientState) && validateNumbersInput(patientPostalCode);*/
-		
+				
 		return isValid;
 			
 	}

@@ -5,9 +5,10 @@ package com.poc.constant;
  * @version 1.0
  *
  */
-public class PatientConstants {
-	
-	public static final String PRESTNT_ADDRESS_TYPE = "Present Address";
+public abstract class PatientConstants {
+	public static final String PRESENT_ADDRESS_TYPE = "Present Address";
 	public static final String PERMANENT_ADDRESS_TYPE = "Permanent Address";
+	public static final String PRIMARY_CONTACT = "Primary Contact";
+	public static final String ALTERNATE_CONTACT = "Alternate Contact";
 
 }

@@ -2,8 +2,9 @@ package com.poc.model;
 
 
 /**
- * @author HS106406
  * This Telephone class represents as Model class for holding contact details of a patient
+ * @author HS106406
+ * @version 1.0
  */
 public class Telephone {
 
