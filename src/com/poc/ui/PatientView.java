@@ -33,6 +33,7 @@ import com.poc.util.PopupWindow;
 
 /**
  * This class for View Update and delete functionality
+ * 
  * @author HS106406
  * @version 1.0
  *
@@ -72,6 +73,7 @@ public class PatientView {
 
 	/**
 	 * To show all patient details after creation
+	 * 
 	 * @param isAllPatientList
 	 */
 	public void showPatientDetails(boolean isAllPatientList) {
@@ -82,7 +84,7 @@ public class PatientView {
 		patientEntry.updateButton.setEnabled(false);
 		shell.layout();
 		shell.setSize(800, 580);
-		
+
 		while (!shell.isDisposed()) {
 			if (displayParent.readAndDispatch()) {
 				displayParent.sleep();
@@ -93,6 +95,7 @@ public class PatientView {
 
 	/**
 	 * After created fetch all the patient details and setting in form
+	 * 
 	 * @param isAllPatientList
 	 */
 	private void showPatientAfterCreation(boolean isAllPatientList) {
@@ -104,16 +107,18 @@ public class PatientView {
 			}
 			createPageView(displayParent, isAllPatientList);
 
-		} catch (IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
-		} catch(InterruptedException e) {
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 
 	}
 
 	/**
-	 * This method is to create form with search view edit and delete button with action listener
+	 * This method is to create form with search view edit and delete button with
+	 * action listener
+	 * 
 	 * @param displayParent
 	 * @param isAllPatientList
 	 */
@@ -182,41 +187,50 @@ public class PatientView {
 
 	/**
 	 * This method used for Delete button listener functionality
+	 * 
 	 * @param deleteButton
 	 */
 	private void deleteButtonListener(Button deleteButton) {
 		deleteButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				System.out.println("Delete Paitent");
-				// TableItem[] item = table.getSelection();
-				Integer index = table.getSelectionIndex();
-				System.out.println("Selected record index value is: " + index);
-				TableItem selectedRecord = table.getItem(index);
-				Integer patientId = Integer.valueOf(selectedRecord.getText(0));
-				System.out.println("Selected record'spatient id : " + patientId);
-				try {
-					HttpResponse<String> response = RestClient.removePatient(patientId);
-					if (response.statusCode() == 200) {
-						Integer option = PopupWindow.showDialogeBox(shell, SWT.ICON_WORKING, "Success",
-								"Patient ID " + patientId + " deleted successfully");
+				MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
+				messageBox.setText("Warning!");
+				messageBox.setMessage("Do you want to delete the Patient ID :  " + table.getItem(table.getSelectionIndex()).getText(0) + "?");
 
-						patientEntry.setDataForDefaultPage();
-						shell.close();
-					} else {
-						PopupWindow.showDialogeBox(shell,SWT.ICON_ERROR, "Fail", response.body());
+				Integer choice = messageBox.open();
+
+				if (choice == SWT.YES) {
+					// TableItem[] item = table.getSelection();
+					Integer index = table.getSelectionIndex();
+					System.out.println("Selected record index value is: " + index);
+					TableItem selectedRecord = table.getItem(index);
+					Integer patientId = Integer.valueOf(selectedRecord.getText(0));
+					System.out.println("Selected record'spatient id : " + patientId);
+					try {
+						HttpResponse<String> response = RestClient.removePatient(patientId);
+						if (response.statusCode() == 200) {
+							Integer option = PopupWindow.showDialogeBox(shell, SWT.ICON_WORKING, "Success",
+									"Patient ID " + patientId + " deleted successfully");
+
+							patientEntry.setDataForDefaultPage();
+							shell.close();
+						} else {
+							PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail", response.body());
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
-
 		});
 	}
 
 	/**
 	 * This method used for View button listener functionality
+	 * 
 	 * @param displayParent
 	 * @param viewButton
 	 */
@@ -235,10 +249,12 @@ public class PatientView {
 					shell.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-					PopupWindow.showDialogeBox(shell,SWT.ICON_ERROR, "Fail", "IOException occured, Patient deatils cannot view for Patient ID : " + patientId);
-				}catch (InterruptedException ie) {
+					PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
+							"IOException occured, Patient deatils cannot view for Patient ID : " + patientId);
+				} catch (InterruptedException ie) {
 					ie.printStackTrace();
-					PopupWindow.showDialogeBox(shell,SWT.ICON_ERROR, "Fail", "InterruptedException occured, Patient deatils cannot view for Patient ID : " + patientId);
+					PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
+							"InterruptedException occured, Patient deatils cannot view for Patient ID : " + patientId);
 				}
 				System.out.println("End of view listener");
 			}
@@ -247,6 +263,7 @@ public class PatientView {
 
 	/**
 	 * This method used for Edit button listener functionality
+	 * 
 	 * @param displayParent
 	 * @param editButton
 	 */
@@ -265,20 +282,22 @@ public class PatientView {
 					shell.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-					PopupWindow.showDialogeBox(shell,SWT.ICON_ERROR, "Fail", "IOException occured, Patient deatils cannot edit for Patient ID : " + patientId);
-				}
-				catch (InterruptedException ie) {
+					PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
+							"IOException occured, Patient deatils cannot edit for Patient ID : " + patientId);
+				} catch (InterruptedException ie) {
 					ie.printStackTrace();
-					PopupWindow.showDialogeBox(shell,SWT.ICON_ERROR, "Fail", "InterruptedException occured, Patient deatils cannot edit for Patient ID : " + patientId);
+					PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
+							"InterruptedException occured, Patient deatils cannot edit for Patient ID : " + patientId);
 				}
 				System.out.println("End of Edit listenier");
 
 			}
 		});
 	}
-	
+
 	/**
 	 * This method used for Search button listener functionality
+	 * 
 	 * @param displayParent
 	 * @param searchlabel
 	 * @param searchText
@@ -295,16 +314,15 @@ public class PatientView {
 				System.out.println("Inside Search button listener");
 				System.out.println("Selected search field : " + comboSearchCriteria.getText());
 				Boolean isRemoveAllDataFromTable = table != null && table.getItemCount() > 0 ? true : false;
-                Boolean isDataValidToSearch = true;
+				Boolean isDataValidToSearch = true;
 				if (comboSearchCriteria.getText().isBlank()) {
 					PopupWindow.showDialogeBox(shell, SWT.ICON_WARNING, "Warning",
 							"Please select the search criteria!");
-				}else if(searchText.getText().trim().isBlank()) {
+				} else if (searchText.getText().trim().isBlank()) {
 					isDataValidToSearch = false;
 					PopupWindow.showDialogeBox(shell, SWT.ICON_WARNING, "Warning",
 							"Please pass " + comboSearchCriteria.getText() + " value to search...");
 				}
-				
 
 				if (comboSearchCriteria.getText().equals("Patient ID") && isDataValidToSearch) {
 					System.out.println("Search by patient ID");
@@ -318,9 +336,9 @@ public class PatientView {
 						System.out.println("Search by patient ID completed");
 
 					} catch (NumberFormatException | IOException | InterruptedException e) {
-						Integer option =PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
+						Integer option = PopupWindow.showDialogeBox(shell, SWT.ICON_ERROR, "Fail",
 								"Patient does not exist with Patient ID :  " + patientId);
-						
+
 						e.printStackTrace();
 					}
 
@@ -329,7 +347,7 @@ public class PatientView {
 					String patientName = searchText.getText();
 					try {
 						patientList = RestClient.fetchPatientsByName(patientName.toUpperCase());
-						
+
 						createPatientsTable(displayParent, searchlabel, viewButton, editButton, deleteButton,
 								patientList, isRemoveAllDataFromTable);
 						System.out.println("Search by patient Name completed");
@@ -340,8 +358,8 @@ public class PatientView {
 
 				}
 
-				//PopupWindow.showDialogeBox(shell, SWT.ICON_INFORMATION, "In-Progress",
-						//"Search functionality is under construction");
+				// PopupWindow.showDialogeBox(shell, SWT.ICON_INFORMATION, "In-Progress",
+				// "Search functionality is under construction");
 				System.out.println("End Search button listener");
 
 			}
@@ -350,6 +368,7 @@ public class PatientView {
 
 	/**
 	 * create patient list table
+	 * 
 	 * @param displayParent
 	 * @param label
 	 * @param viewButton
@@ -379,10 +398,12 @@ public class PatientView {
 		}
 
 		String[] tableHeaders = { "patient_id", "patient_name", "gender", "date_of_birth", "Primary phone_number" };
-				//"Present address_type", "Present street", "Present city", "Present state", "Present postal_code", 
-				//"Permanent address_type", "Permanent street", "Permanent city", "Permanent state", "Permanent postal_code", 
-				//"Primary phone_type", "Primary country_code", "Primary phone_number" };
-				//"Alt phone_type", "Alt country_code", "Alt phone_number" };
+		// "Present address_type", "Present street", "Present city", "Present state",
+		// "Present postal_code",
+		// "Permanent address_type", "Permanent street", "Permanent city", "Permanent
+		// state", "Permanent postal_code",
+		// "Primary phone_type", "Primary country_code", "Primary phone_number" };
+		// "Alt phone_type", "Alt country_code", "Alt phone_number" };
 		for (int index = 0; index < tableHeaders.length; index++) {
 			TableColumn column = new TableColumn(table, SWT.BOLD);
 			column.setWidth(100);
@@ -390,7 +411,7 @@ public class PatientView {
 			table.getColumn(index).pack();
 		}
 		table.setBounds(30, 200, 500, 200);
-		
+
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
@@ -406,37 +427,36 @@ public class PatientView {
 				item.setText(2, patient.getGender().toString());
 				item.setText(3, patient.getDateOfBirth().toString());
 
-				/*for (Address address : patient.getAddress()) {
-					if (address.getAddressType().equalsIgnoreCase(PatientConstants.PRESENT_ADDRESS_TYPE)) {
-						item.setText(4, address.getAddressType());
-						item.setText(5, address.getStreet());
-						item.setText(6, address.getCity());
-						item.setText(7, address.getState());
-						item.setText(8, address.getPostalCode());
-
-					} else if (address.getAddressType().equalsIgnoreCase(PatientConstants.PERMANENT_ADDRESS_TYPE)) {
-						item.setText(9, address.getAddressType());
-						item.setText(10, address.getStreet());
-						item.setText(11, address.getCity());
-						item.setText(12, address.getState());
-						item.setText(13, address.getPostalCode());
-					}
-				}*/
+				/*
+				 * for (Address address : patient.getAddress()) { if
+				 * (address.getAddressType().equalsIgnoreCase(PatientConstants.
+				 * PRESENT_ADDRESS_TYPE)) { item.setText(4, address.getAddressType());
+				 * item.setText(5, address.getStreet()); item.setText(6, address.getCity());
+				 * item.setText(7, address.getState()); item.setText(8,
+				 * address.getPostalCode());
+				 * 
+				 * } else if (address.getAddressType().equalsIgnoreCase(PatientConstants.
+				 * PERMANENT_ADDRESS_TYPE)) { item.setText(9, address.getAddressType());
+				 * item.setText(10, address.getStreet()); item.setText(11, address.getCity());
+				 * item.setText(12, address.getState()); item.setText(13,
+				 * address.getPostalCode()); } }
+				 */
 
 				for (Telephone telephone : patient.getMobileNumber()) {
 					if (telephone.getPhoneType().equalsIgnoreCase(PatientConstants.PRIMARY_CONTACT)) {
-						//item.setText(14, telephone.getPhoneType());
-						//item.setText(15, telephone.getCountryCode());
-						//item.setText(16, telephone.getPhoneNumber());
+						// item.setText(14, telephone.getPhoneType());
+						// item.setText(15, telephone.getCountryCode());
+						// item.setText(16, telephone.getPhoneNumber());
 						item.setText(4, telephone.getPhoneNumber());
-						//item.setText(10, telephone.getCountryCode());
-						//item.setText(11, telephone.getPhoneNumber());
+						// item.setText(10, telephone.getCountryCode());
+						// item.setText(11, telephone.getPhoneNumber());
 
-					} /*else if (telephone.getPhoneType().equalsIgnoreCase(PatientConstants.ALTERNATE_CONTACT)) {
-						item.setText(17, telephone.getPhoneType());
-						item.setText(18, telephone.getCountryCode());
-						item.setText(19, telephone.getPhoneNumber());
-					}*/
+					} /*
+						 * else if
+						 * (telephone.getPhoneType().equalsIgnoreCase(PatientConstants.ALTERNATE_CONTACT
+						 * )) { item.setText(17, telephone.getPhoneType()); item.setText(18,
+						 * telephone.getCountryCode()); item.setText(19, telephone.getPhoneNumber()); }
+						 */
 				}
 
 			}
@@ -472,7 +492,7 @@ public class PatientView {
 						break;
 					case SWT.CANCEL:
 
-					System.out.println("Selected Option Value : " + selectedValue);
+						System.out.println("Selected Option Value : " + selectedValue);
 
 					}
 				}
@@ -480,7 +500,7 @@ public class PatientView {
 		});
 
 		table.pack();
-		
+
 		System.out.println("End");
 
 	}
